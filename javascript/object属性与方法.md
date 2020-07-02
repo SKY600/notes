@@ -23,6 +23,7 @@
     17. Object.seal() —— 防止其他代码删除对象的属性。
     18. Object.setPrototypeOf() —— 设置对象的原型（即内部[[prototype]]属性）。
     19. Object.values() —— 返回给定对象自身可枚举值的数组。
+    20. Object.fromEntries() —— Object.entries()的逆操作，用于将一个键值对数组转为对象。
 
 #### 1. Object.assign()
 
@@ -62,6 +63,16 @@ String类型和 Symbol 类型的属性都会被拷贝。
 注意，Object.assign 不会在那些source对象值为 null 或 undefined 的时候抛出错误。
 
 <b>示例:</b>
+
+* 数组的处理
+
+```
+Object.assign可以用来处理数组，但是会把数组视为对象。
+
+Object.assign([1, 2, 3], [4, 5])
+// [4, 5, 3]
+上面代码中，Object.assign把数组视为属性名为 0、1、2 的对象，因此源数组的 0 号属性4覆盖了目标数组的 0 号属性1。
+```
 
 * 复制一个对象
 ```
@@ -1201,4 +1212,53 @@ console.log(Object.values(my_obj)); // ['bar']
 ```
 // non-object argument will be coerced to an object
 console.log(Object.values('foo')); // ['f', 'o', 'o']
+```
+
+#### 20. Object.fromEntries() 
+
+Object.fromEntries()方法是Object.entries()的逆操作，用于将一个键值对数组转为对象。
+
+<b>语法:</b>
+> Object.values(obj)
+
+<b>参数:</b>
+<br>obj: 键值对数组。
+
+<b>返回值:</b>
+<br>对象。
+
+<b>描述:</b>
+
++ 将键值对的数据结构还原为对象，因此特别适合将 Map 结构转为对象。
++ 配合URLSearchParams对象，将查询字符串转为对象。
+
+<b>demo:</b>
+
+```
+Object.fromEntries([
+  ['foo', 'bar'],
+  ['baz', 42]
+])
+// { foo: "bar", baz: 42 }
+```
+
+```
+// 例一
+const entries = new Map([
+  ['foo', 'bar'],
+  ['baz', 42]
+]);
+
+Object.fromEntries(entries)
+// { foo: "bar", baz: 42 }
+
+// 例二
+const map = new Map().set('foo', true).set('bar', false);
+Object.fromEntries(map)
+// { foo: true, bar: false }
+```
+
+```
+Object.fromEntries(new URLSearchParams('foo=bar&baz=qux'))
+// { foo: "bar", baz: "qux" }
 ```

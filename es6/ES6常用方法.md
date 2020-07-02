@@ -1,6 +1,4 @@
-### ES6常用方法
-
-#### 数值的扩展方法
+### 数值的扩展方法
     Number.isFinite(), Number.isNaN()
     Number.parseInt(), Number.parseFloat()
     Number.isInteger()
@@ -30,7 +28,7 @@
     BigInt
 
 
-#### 字符串的新增方法
+### 字符串的新增方法
     String.fromCodePoint()
     String.raw()
     实例方法：codePointAt()
@@ -41,7 +39,7 @@
     实例方法：trimStart()，trimEnd()
     实例方法：matchAll()
 
-#### 数组的扩展
+### 数组的扩展
     扩展运算符
     Array.from()
     Array.of()
@@ -53,6 +51,8 @@
     数组实例的 flat()，flatMap()
     数组的空位
     Array.prototype.sort() 的排序稳定性
+
+### 详解
 
 #### Number.isFinite(), Number.isNaN() 
 > Number.isFinite()用来检查一个数值是否为有限的（finite），即不是Infinity。
