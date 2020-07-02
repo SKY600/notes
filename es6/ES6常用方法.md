@@ -1,4 +1,6 @@
-### 数值的扩展方法
+### 介绍
+
+#### 数值的扩展方法
     Number.isFinite(), Number.isNaN()
     Number.parseInt(), Number.parseFloat()
     Number.isInteger()
@@ -28,7 +30,7 @@
     BigInt
 
 
-### 字符串的新增方法
+#### 字符串的新增方法
     String.fromCodePoint()
     String.raw()
     实例方法：codePointAt()
@@ -39,7 +41,7 @@
     实例方法：trimStart()，trimEnd()
     实例方法：matchAll()
 
-### 数组的扩展
+#### 数组的扩展
     扩展运算符
     Array.from()
     Array.of()
