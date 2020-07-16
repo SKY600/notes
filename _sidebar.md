@@ -3,6 +3,7 @@
     * [执行上下文](/javascript/执行上下文)
     * [object属性与方法](/javascript/object属性与方法)
     * [call-apply-bind](/javascript/call-apply-bind)
+    * [clone](/javascript/clone)
     * [new](/javascript/new)
 * ES6
     * [Set 和 Map](/es6/Set_Map)
