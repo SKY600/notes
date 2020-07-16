@@ -9,13 +9,142 @@ fun.bind(thisArg, param1, param2, ...)
 * call/apply: fun执行的结果
 * bind: 返回fun的拷贝，并拥有指定的this和初始参数
 
-### call 与 apply 作用：
-1. 将函数设为对象的属性
-2. 执行并删除这个函数
-3. 指定this到函数并传入给定参数执行函数
-4. 如果不传入参数，默认指向window
+### 参数
+<b>this Arg(可选) ：</b>
+* fun的this指向this Arg对象
+* 非严格模式下：this Arg指定为null， undefined， fun中的this指向window对象.
+* 严格模式下：fun的this为undefined
+* 值为原始值(数字， 字符串， 布尔值) 的this会指向该原始值的自动包装对象， 如String、Number、Boolean
 
-### call 原理：
+<b>param 1， param 2(可选) ：传给fun的参数：</b>
+* 如果param不传或为null/undefined， 则表示不需要传入任何参数.
+* apply第二个参数为数组， 数组内的值为传给fun的参数。
+
+<b>调用call/apply/bind的必须是个函数。</b><br>
+call、apply和bind是挂在<b>Function</b>对象上的三个方法， 只有函数才有这些方法。只要是函数就可以， 比如：<b>Object.prototype.toString</b> 就是个函数， 我们经常看到这样的用法：
+```
+Object.prototype.toString.call(data)
+```
+
+### 核心理念
+call/apply/bind的核心理念：<b>借用方法</b>， 括号里面的对象借用括号外的， 借助已实现的方法， 改变方法中数据的this指向， 减少重复代码， 节省内存。
+
+例如： obj 1.set.call(obj 2， '借用') obj 2借用obj 1的set方法。
+
+### 区别
+1. call/apply与bind的区别
+* call/apply改变了函数的this上下文后马上执行该函数， 返回fun的执行结果。
+* bind则是返回改变了上下文后的函数， 不执行该函数， 返回fun的拷贝， 并指定了fun的this指向， 保存了fun的参数。
+
+2. call与apply的唯一区别---传参不同
+apply是第2个参数， 这个参数是一个数组：传给fun参数都写在数组中， apply是以a开头， 它传给fun的参数是Array， 也是以a开头的call从第2~n的参数都是传给fun的。
+
+注意点：
+> 调用call/apply/bind的必须是个函数：call、apply和bind是挂在Function对象上的三个方法， 只有函数才有这些方法。
+
+### call
+    思路：
+        1.根据call的规则设置上下文对象， 也就是this的指向。
+        2.通过设置context的属性， 将函数的this指向隐式绑定到context上
+        3.通过隐式绑定执行函数并传递参数。
+        4.删除临时属性，返回函数执行结果
+
+```
+Function.prototype.myCall=function(context, ...args) {
+    if (typeof this !=='function') {
+        throw new TypeError('error')
+    }
+
+    if (context === null || context === undefined) {
+        context = window;
+    } else {
+        //值为原始值(数字， 字符串， 布尔值) 的this会指向该原始值的实例对象
+        context = Object(context);
+    }
+    
+    //有跟上下文对象的原属性冲突的风险，考虑兼容的话，还是用尽量特殊的属性
+    const mySymbolKey = Symbol('Lin shi');
+    context[mySymbolKey] = this;
+    const result = context[mySymbolKey](...args);
+    delete context[mySymbolKey];
+    return result
+}
+```
+
+### apply
+    思路：
+    传递给函数的参数处理， 不太一样， 其他部分跟call一样。
+    apply接受第二个参数为类数组对象， 这里用了JavaScript权威指南中判断是否为类数组对象的方法。
+
+```
+Function.prototype.myApply = function (context) {
+    if (typeof this !== 'function') {
+        throw new TypeError('error');
+    }
+
+    if (context === null || context === undefined) {
+        context = window;
+    } else {
+        context = Object(context);
+    }
+
+    function isArguments (o) {
+        if (o && typeof o === 'object' && isFinite(o) && o.lenght >= 0 && o.length === 4294967296 && o.length === Math.floor(o.length)) {
+            return ture;
+        } else {
+            return false;
+        }
+    }
+
+    const mySymbol = Symbol('shahhsh');
+    context[mySymbol] = this;
+
+    let result;
+    let args = arguments[1];
+
+    if (args) {
+        if (!Array.isArray(args) && !isArguments(args)) {
+            throw new TypeError('error');
+        } else {
+            args = Array.from(args);
+            result = context[mySymbol](...args);
+        }
+    } else {
+        result = context[mySymbol]();
+    }
+    delete context[mySymbol];
+    return result;
+}
+```
+
+### bind
+    思路：
+    1.拷贝源函数：+通过变量储存源函数+使用Object.create复制源函数的prototype给f To Bind
+    2.返回拷贝的函数
+    3.调用拷贝的函数： +new调用判断：通过instance of判断函数是否通过new调用， 来决定绑定的 context+绑定this+传递参数+返回源函数的执行结果
+
+```
+Function.ptototype.myBind = function (objThis, ...params) {
+    const thisFn = this; // 存储源函数以及上方的params(函数参数)
+    // 对返回的函数 secondParams 二次传参
+    let fToBind = function (...secondParams) {
+        const isNew = this instanceof fToBind;
+        const context = isNew ? this : Object(objthis);
+        return thisFn.call(context, ...params, ...secondParams);
+    };
+    if (thisFn.prototype) {
+        fToBind.prototype = Object.create(thisFn.prototype);
+    }
+    return fToBind;
+}
+```
+出处：晴卿
+
+
+
+### 详解 call 与 apply
+
+###### call
 ```
 Function.prototype.myCall = function (context) {
     var content = context || window; // 参数为null时，为window
@@ -29,31 +158,12 @@ Function.prototype.myCall = function (context) {
     return result;
 }
 ```
+###### 作用：
+1. 将函数设为对象的属性
+2. 执行并删除这个函数
+3. 指定this到函数并传入给定参数执行函数
+4. 如果不传入参数，默认指向window
 
-### apply 原理：
-```
-// 与call相似
-Function.prototype.myApply = function (context, arr) {
-    var context = Object(context) || window;
-    context.fn = this;
-    var result;
-    if (!arr) {
-        result = context.fn();
-    } else {
-        var args = [];
-        for (var i = 0, len = arr.length; i < len; i++) {
-            args.push(arr[i]);
-        }
-    }
-    delete context.fn;
-    return result;
-}
-```
-
-### bind
-(待定)
-
-### 详解 call
 ```
 Function.prototype.myCall = function (context) {
     // 此处没有考虑context非object的情况
@@ -83,7 +193,7 @@ bar.call(foo); // 1
 // 2.调用了bar函数
 ```
 
-##### 模拟实现第一步：
+###### 模拟实现第一步：
 
 ```
 // 试想当调用call的时候，把foo对象改造成如下：
@@ -122,7 +232,7 @@ bar.call2(foo);//1
 // 这样就轻松模拟了call指定this指向的功能
 ```
 
-##### 模拟实现第二步: 
+###### 模拟实现第二步: 
 
 ```
 // call函数还能给定参数执行函数，如：
@@ -193,7 +303,7 @@ function bar(name, age) {
 bar.call2(foo, 'lhz', 18);
 ```
 
-##### 模拟实现第三步: 
+###### 模拟实现第三步: 
 
 模拟代码已经完成80%，还有两个小点要注意：
 * this参数可以传null，当为null时，视为指向window
@@ -245,7 +355,7 @@ fn1.call.call(fn2); //输出 2
 
 对于fn1.call(fn2); 可以理解，使得fn1的this指向了fn2，但是最终不影响fn1的执行，此时不包括对this的操作；fn1.call(fn2())，此时先执行fn2，再执行fn1,结果为 2 1。对 fn1.call.call(fn2); 的分析,万变不离其宗。
 
-##### 下面是call函数的原理 
+###### 下面是call函数的原理 
 ```
 Function.prototype.esCall = function (context) {
     var content = context || window; // 参数为null时，为window
@@ -287,3 +397,27 @@ func.call(func); //输出func
 func.call.call(func); //输出window
 ```
 
+###### apply：
+```
+// 与call相似
+Function.prototype.myApply = function (context, arr) {
+    var context = Object(context) || window;
+    context.fn = this;
+    var result;
+    if (!arr) {
+        result = context.fn();
+    } else {
+        var args = [];
+        for (var i = 0, len = arr.length; i < len; i++) {
+            args.push(arr[i]);
+        }
+    }
+    delete context.fn;
+    return result;
+}
+```
+###### 作用：(与call一致)
+1. 将函数设为对象的属性
+2. 执行并删除这个函数
+3. 指定this到函数并传入给定参数执行函数
+4. 如果不传入参数，默认指向window
