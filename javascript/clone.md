@@ -20,7 +20,7 @@ Object.prototype.clone = function () {
 深拷贝本身只针对较为复杂的object类型数据。
 
 ### 方法
-###### 浅拷贝：slice、concat、extend
+###### 浅拷贝：slice、concat、extend、Object.assign()
 
 Array 的 slice 和 concat 方法 和 jQuery 中的 extend 复制方法，他们都会复制第一层的值，对于 第一层 的值都是 深拷贝，而到 第二层 的时候 Array 的 slice 和 concat 方法就是 复制引用 ，jQuery 中的 extend 复制方法 则 取决于 你的 第一个参数， 也就是是否进行递归复制。所谓第一层 就是 key 所对应的 value 值是基本数据类型。
 
@@ -33,7 +33,7 @@ console.log(oldObj); // { a: 1, b: 2, c: 4 }
 console.log(newObj); // { a: 1, b: 2, c: 4 }
 ```
 
-###### 深拷贝（简单版）：JSON.parse()、JSON.stringify()
+###### 深拷贝（简单版）：JSON.parse()、JSON.stringify()、递归拷贝
 
 ```
 // 1.无法实现对函数、RegExp等特殊对象的克隆
@@ -44,6 +44,17 @@ const newObj1 = JSON.parse(JSON.stringify(oldObj1));
 oldObj1.c = 4;
 console.log(oldObj1); // { a: 1, b: 2, c: 4 }
 console.log(newObj1); // { a: 1, b: 2, c: 3 }
+
+// 递归拷贝
+function deepClone(obj) {
+    let copy = obj instanceof Array ? [] : {};
+    for (let i in obj) {
+        if (obj.hasOwnProperty(i)) {
+            copy[i] = typeof obj[i] === 'object' ? deepClone(obj[i]) : obj[i];
+        }
+    }
+    return copy;
+}
 ```
 
 ###### 深拷贝（面试版）
