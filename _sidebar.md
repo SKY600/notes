@@ -15,6 +15,8 @@
     * [内存泄漏](/javascript/内存泄漏)
     * [防抖和节流](/javascript/防抖和节流)
     * [事件代理](/javascript/事件代理)
+    * [同源策略](/javascript/同源策略)
+    * [原型](/javascript/原型)
 * ES6
     * [Set 和 Map](/es6/Set_Map)
     * [Proxy](/es6/Proxy)
