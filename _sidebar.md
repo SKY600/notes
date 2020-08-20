@@ -11,6 +11,7 @@
     * [new](/javascript/new)
     * [闭包](/javascript/闭包)
     * [数组的方法](/javascript/数组的方法)
+    * [数组去重](/javascript/数组去重)
     * [垃圾回收机制](/javascript/垃圾回收机制)
     * [内存泄漏](/javascript/内存泄漏)
     * [防抖和节流](/javascript/防抖和节流)
