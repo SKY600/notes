@@ -1,7 +1,83 @@
-#### 状态：Change, Staged, Committed
+### 使用
+##### git fetch 和 git pull的区别
+* ```git pull```：相当于是从远程获取最新版本并merge到本地
+* ```git fetch```：相当于是从远程获取最新版本到本地，不会自动merge
+
+##### 添加upstream
+```git remote add upstream http://github/remote/test.git```
+
+##### 删除某个分支
+```git branch -D 分支名```
+
+##### 示例
+```
+git fetch upstream
+git merge upstream/feature-typescript
+git push origin feature-typescript
+```
+##### 从远端切换红包分支(不带master代码)：
+1. 暂存本地更改：```git add .```
+2. 提交本地更改：```git commit```
+3. 拉取远端代码：```git fetch upstream```
+4. 合并代码：```git merge upstream/release-red-packet```
+5. 提交代码：```git push origin release-red-packet```
+
+##### 从远端切换拼团活动分支(不带master代码)：
+```git checkout -b feature upstream/feature```
+1. 暂存本地更改：```git add .```
+2. 提交本地更改：```git commit```
+3. 拉取远端代码：```git fetch upstream```
+4. 合并代码：```git merge upstream/release-red-packet```
+5. 提交代码：```git push origin release-red-packet```
+
+##### 提交代码
+1. ```git add . ```&ensp;&ensp;添加所有文件
+2. ```git commit -m "本功能全部完成"```
+
+##### 撤回commit
+```git reset --soft HEAD^```
+
+仅仅是撤回commit操作，写的代码仍然保留。
+
+HEAD^的意思是上一个版本，也可以写成HEAD~1
+
+如果你进行了2次commit，想都撤回，可以使用HEAD~2
+
+至于这几个参数：
+> --mixed
+
+意思是：不删除工作空间改动代码，撤销commit，并且撤销git add . 操作
+
+这个为默认参数,git reset --mixed HEAD^ 和 git reset HEAD^ 效果是一样的。
+
+> --soft  
+
+不删除工作空间改动代码，撤销commit，不撤销git add .
+
+> --hard
+
+删除工作空间改动代码，撤销commit，撤销git add .
+
+注意完成这个操作后，就恢复到了上一次的commit状态。
+
+
+##### commit注释写错了，改注释：
+```git commit --amend```
+
+此时会进入默认vim编辑器，修改注释完毕后保存就好了。
+
+### 设置并查看config配置
+```git config --global user.name "中文姓名" ```
+```git config --global user.email "email@email.com"```
+
+```cat ~/.gitconfig```
+
+### 状态：Change, Staged, Committed
 * Change(Unstaged)：你改动了一个，没有调用任何git命令前，就是这种状态。
 * Staged：调用git add或者git commit -a之后，进入Staged状态，表示申明要变动了。
 * Committed：Commit，生成新的版本commit号，进入此状态。
+
+### git 命令
 
 #### git init：
 初始化一个目录，其实就是加了一个.git的隐藏目录
