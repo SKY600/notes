@@ -1,9 +1,4 @@
-### 作用：
-用于判断一个引用类型是否属于某构造函数；还可以在继承关系中用来判断一个实例是否属于它的父类型。
-### 和typeof的区别：
-* typeof只能返回 number string boolean object function undefined，但是对于对象{}、数组[]、null都会返回object
-* 为了弥补这一点，instanceof从原型的角度，来判断某引用属于哪个构造函数，从而判定它的数据类型
-
+### instanceof的原理及实现：
 ```
 function instance_of(L, R) {
     var O = R.prototype; // 取R的显示原型
@@ -16,14 +11,25 @@ function instance_of(L, R) {
         L = L.__proto__;
     }
 }
+```
 
+### 作用：
+示例： a instanceof B
+
+> 检测a的原型链（__proto__）上是否有B.prototype，若有返回true，否则false。
+
+### 和typeof的区别：
+* typeof只能返回 number string boolean object function undefined，但是对于对象{}、数组[]、null都会返回object
+* 为了弥补这一点，instanceof从原型的角度，来判断某引用属于哪个构造函数，从而判定它的数据类型
+
+### 使用
+```
 function Fn() {
     // 每个函数function都有一个prototype，即显式原型（属性），默认指向一个空的object对象。
     console.log('Fn.prototype: ', Fn.prototype);
 }
 Fn();
 ```
-
 ```
 //每个实例对象都有一个__ptoro__，称为隐式原型。
 var fn = new Fn();
